@@ -1,0 +1,198 @@
+---
+title: "MA 615 EDA"
+author: "Zijia Wang"
+date: "2022-12-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load(ggplot2,tidyverse,lubridate,readr,cowplot)
+```
+
+```{r include=FALSE}
+
+HRQ1_22 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2022-Q1_HRTravelTimes.csv", header = T)
+HRQ2_22 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2022-Q2_HRTravelTimes.csv", header = T)
+HRQ3_22 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2022-Q3_HRTravelTimes.csv", header = T)
+HRQ4_21 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2021-Q4_HRTravelTimes.csv", header = T)
+LRQ1_22 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2022-Q1_LRTravelTimes.csv", header = T)
+LRQ2_22 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2022-Q2_LRTravelTimes.csv", header = T)
+LRQ3_22 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2022-Q3_LRTravelTimes.csv", header = T)
+LRQ4_21 <- read.csv("~/Desktop/MSSP/MA615/ma-615-final/2021-Q4_LRTravelTimes.csv", header = T)
+
+```
+
+```{r include=FALSE}
+
+HRQ1_22$weekday <- wday(HRQ1_22$service_date, label=TRUE)
+HRQ2_22$weekday <- wday(HRQ2_22$service_date, label=TRUE)
+HRQ3_22$weekday <- wday(HRQ3_22$service_date, label=TRUE)
+HRQ4_21$weekday <- wday(HRQ4_21$service_date, label=TRUE)
+LRQ1_22$weekday <- wday(LRQ1_22$service_date, label=TRUE)
+LRQ2_22$weekday <- wday(LRQ2_22$service_date, label=TRUE)
+LRQ3_22$weekday <- wday(LRQ3_22$service_date, label=TRUE)
+LRQ4_21$weekday <- wday(LRQ4_21$service_date, label=TRUE)
+
+```
+
+## Only chose the first week in each month.
+```{r include=FALSE, warning=FALSE}
+df1 <- HRQ1_22 %>% filter( service_date == 
+c("2022-01-03", "2022-01-04","2022-01-05","2022-01-06","2022-01-07","2022-01-08","2022-01-09",
+"2022-02-07","2022-02-08","2022-02-09","2022-02-10","2022-02-11","2022-02-12","2022-02-13", "2022-03-07","2022-03-08","2022-03-09","2022-03-10","2022-03-11","2022-03-12","2022-03-13"))
+
+df2 <- HRQ2_22 %>% filter(service_date == 
+c("2022-04-04", "2022-04-05", "2022-04-06", "2022-04-07", "2022-04-08", "2022-04-09", "2022-04-10",
+"2022-05-02", "2022-05-03", "2022-05-04", "2022-05-05", "2022-05-06", "2022-05-07", "2022-05-08",
+"2022-06-06", "2022-06-07", "2022-06-08", "2022-06-09", "2022-06-10", "2022-06-11", "2022-06-12"))
+
+df3 <- HRQ3_22 %>% filter(service_date == 
+c("2022-07-04", "2022-07-05", "2022-07-06", "2022-07-07", "2022-07-08", "2022-07-09", "2022-07-10",
+"2022-08-01", "2022-08-02", "2022-08-03", "2022-08-04", "2022-08-05", "2022-08-06", "2022-08-07",
+"2022-09-05", "2022-09-06", "2022-09-07", "2022-09-08", "2022-09-09", "2022-09-10", "2022-09-11"))
+
+df4 <- HRQ4_21 %>% filter(service_date == 
+c("2021-10-04", "2021-10-05", "2021-10-06", "2021-10-07", "2021-10-08", "2021-10-09", "2021-10-10",
+"2021-11-01", "2021-11-02", "2021-11-03", "2021-11-04", "2021-11-11", "2021-11-06", "2021-11-07",
+"2021-12-06", "2021-12-07", "2021-12-08", "2021-12-09", "2021-12-10", "2021-12-11", "2021-12-12"))
+
+df5 <- LRQ1_22 %>% filter(service_date == 
+c("2022-01-03","2022-01-04","2022-01-05","2022-01-06","2022-01-07","2022-01-08","2022-01-09",
+"2022-02-07","2022-02-08","2022-02-09","2022-02-10","2022-02-11","2022-02-12","2022-02-13", "2022-03-07","2022-03-08","2022-03-09","2022-03-10","2022-03-11","2022-03-12","2022-03-13"))
+
+df6 <- LRQ2_22 %>% filter(service_date == 
+c("2022-04-04", "2022-04-05", "2022-04-06", "2022-04-07", "2022-04-08", "2022-04-09", "2022-04-10",
+"2022-05-02", "2022-05-03", "2022-05-04", "2022-05-05", "2022-05-06", "2022-05-07", "2022-05-08",
+"2022-06-06", "2022-06-07", "2022-06-08", "2022-06-09", "2022-06-10", "2022-06-11", "2022-06-12"))
+
+df7 <- LRQ3_22 %>% filter(service_date == 
+c("2022-07-04", "2022-07-05", "2022-07-06", "2022-07-07", "2022-07-08", "2022-07-09", "2022-07-10",
+"2022-08-01", "2022-08-02", "2022-08-03", "2022-08-04", "2022-08-05", "2022-08-06", "2022-08-07",
+"2022-09-05", "2022-09-06", "2022-09-07", "2022-09-08", "2022-09-09", "2022-09-10", "2022-09-11"))
+
+df8 <- LRQ4_21 %>% filter(service_date == 
+c("2021-10-04", "2021-10-05", "2021-10-06", "2021-10-07", "2021-10-08", "2021-10-09", "2021-10-10",
+"2021-11-01", "2021-11-02", "2021-11-03", "2021-11-04", "2021-11-11", "2021-11-06", "2021-11-07",
+"2021-12-06", "2021-12-07", "2021-12-08", "2021-12-09", "2021-12-10", "2021-12-11", "2021-12-12"))
+
+```
+
+```{r include=FALSE}
+HR <- rbind(df4, df1, df2, df3)
+LR <- rbind(df8, df5, df6, df7)
+# write.csv(HR)
+# write.csv(LR)
+```
+
+
+## Add stop name
+```{r include=FALSE, warning=FALSE}
+stops <- read_csv("~/Desktop/MSSP/MA615/ma-615-final/stops.txt")
+        
+```
+
+## EDA
+I want to analyze the differences of travel time between weekdays and weekends, especially the stops around shopping center at Green line.
+
+```{r include=FALSE, warning=FALSE}
+
+HR_weekdays <- HR %>% filter(weekday == c( "Mon", "Tue", "Wed", "Thu", "Fri"))
+HR_weekends <- HR %>% filter(weekday == c( "Sat", "Sun"))
+
+```
+
+## Orange
+From starting stop to final stop. The final terminal is Forest Hills, and the stop code is 70001. The originating stop is Oak Grove, and the stop code is 70036.
+```{r include=FALSE}
+Orange_weekdays <- HR_weekdays %>% filter(route_id == "Orange"|
+                                            from_stop_id == 70036|
+                                            to_stop_id == 70001) %>%
+                                group_by(service_date) %>%
+                                summarise(start_time_sec = mean(start_time_sec),
+                                             end_time_sec = mean(end_time_sec),
+                                             travel_time_sec = mean(travel_time_sec))
+```
+
+```{r include=FALSE}
+Orange_weekends <- HR_weekends %>% filter(route_id == "Orange"|
+                                            from_stop_id == 70036|
+                                            to_stop_id == 70001) %>%
+                                group_by(service_date) %>%
+                                summarise(start_time_sec = mean(start_time_sec),
+                                             end_time_sec = mean(end_time_sec),
+                                             travel_time_sec = mean(travel_time_sec))
+```
+
+```{r echo=FALSE}
+
+ggplot()+
+  geom_bar(data = Orange_weekdays, aes(x= service_date, y= travel_time_sec), stat = "identity", fill = "#CCEDB1")+
+  geom_bar(data = Orange_weekends, aes(x= service_date, y= travel_time_sec),stat = "identity", fill = "#41B7C4")+
+  theme(axis.text.x = element_text(angle=90,size=8))+
+  xlab("date")+
+  ylab("travel time")
+  labs(title = "Travel time: Weekdays VS Weekends")
+ 
+```
+
+
+```{r echo=FALSE}
+ggplot()+
+  geom_col(data = Orange_weekdays, aes(x= service_date, y= start_time_sec),fill = "#CCEDB1")+
+  geom_col(data = Orange_weekends, aes(x= service_date, y= start_time_sec),fill = "#41B7C4")+
+  theme(axis.text.x = element_text(angle=90,size=8))+
+  xlab("date")+
+  ylab("start time")
+  labs(title = "Start time: Weekdays VS Weekends")
+```
+
+```{r echo=FALSE}
+ggplot()+
+  geom_col(data = Orange_weekdays, aes(x= service_date, y= end_time_sec),fill = "#CCEDB1")+
+  geom_col(data = Orange_weekends, aes(x= service_date, y= end_time_sec),fill = "#41B7C4")+
+  theme(axis.text.x = element_text(angle=90,size=8))+
+  xlab("date")+
+  ylab("end time")
+  labs(title = "End time: Weekdays VS Weekends")
+```
+
+
+```{r include=FALSE, warning=FALSE}
+
+LR_weekdays <- LR %>% filter(weekday == c( "Mon", "Tue", "Wed", "Thu", "Fri"))
+LR_weekends <- LR %>% filter(weekday == c( "Sat", "Sun"))
+
+```
+
+
+Kenmore as our start stop, the stop code is 71150. And We set the final stop is Copley, the stop code is 70154. The route is from Kenmore to Copley.
+```{r include=FALSE}
+Shop_weekdays <- LR_weekdays %>% filter(from_stop_id == 71150|
+                                        to_stop_id == 70154) %>%
+                                group_by(service_date) %>%
+                                summarise(start_time_sec = mean(start_time_sec),
+                                             end_time_sec = mean(end_time_sec),
+                                             travel_time_sec = mean(travel_time_sec))
+```
+
+
+```{r include=FALSE}
+Shop_weekends <- LR_weekends %>% filter(from_stop_id == 71150|
+                                        to_stop_id == 70154) %>%
+                                group_by(service_date) %>%
+                                summarise(start_time_sec = mean(start_time_sec),
+                                             end_time_sec = mean(end_time_sec),
+                                             travel_time_sec = mean(travel_time_sec))
+```
+
+```{r echo=FALSE, fig.height=5, fig.width=7, fig.cap="Travel time: Kenmore to Copley "}
+ggplot()+
+  geom_bar(data = Shop_weekdays, aes(x= service_date, y= travel_time_sec), stat = "identity", fill = "#CC6666")+
+  geom_bar(data = Shop_weekends, aes(x= service_date, y= travel_time_sec),stat = "identity", fill = "#9999CC")+
+  theme(axis.text.x = element_text(angle=90,size=8))+
+  xlab("date")+
+  ylab("travel time")+
+  labs(title = "Travel time: Weekdays VS Weekends")
+```
+What we found is that is there is big difference of travel time between weekdays and weekends.
